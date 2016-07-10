@@ -26,7 +26,7 @@ public class DiscardServer {
                             p.addLast(new DiscardServerHandler());
                         }
                     });
-            ChannelFuture f = b.bind(8888).sync();
+            ChannelFuture f = b.bind(9001).sync();
             f.channel().closeFuture().sync();
         } finally {
 
