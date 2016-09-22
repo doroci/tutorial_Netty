@@ -40,7 +40,7 @@ public class EchoServer {
             b.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)  //bossGroup이 사용할 네트워크 입출력 모드를 설정
                     .option(ChannelOption.SO_BACKLOG, 100)  //채널 옵션 설정
-                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .handler(new LoggingHandler(LogLevel.DEBUG))
                     .childHandler(new ChannelInitializer<SocketChannel>() { //workerGroup 채널의 초기화 방법을 설정
                         @Override
                         public void initChannel(SocketChannel ch) throws Exception {    // 채널 초기화

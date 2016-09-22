@@ -11,10 +11,11 @@ import java.nio.charset.Charset;
  */
 public class EchoServerHandler extends ChannelInboundHandlerAdapter{
 
+
     //클라이언트로 부터 수신할 데이터가 있을 때 호출
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("전송받은 메시지 :" +msg);
+        //System.out.println("전송받은 메시지 :" +msg);
         ctx.write(msg);
     }
 

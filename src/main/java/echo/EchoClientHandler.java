@@ -25,7 +25,7 @@ public class EchoClientHandler extends ChannelInboundHandlerAdapter{
     //소켓이 최초 활성화 되었을 때 호출
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        System.out.println("전송한 메시지 :" +firstMessage);
+        //System.out.println("전송한 메시지 :" +firstMessage);
         ctx.writeAndFlush(firstMessage);
     }
 
