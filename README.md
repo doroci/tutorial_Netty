@@ -87,9 +87,54 @@
  - 멀티쓰레드는 CPU를 최대한 활용을 할 수 있지만 제약도 많다.(Context Switch, 쓰레드 경합 등으로 인한 오버해드 ). 그래서 비동기 네트워크 프레임워크인 Vert.x 나 Node.js 등은 싱글 쓰레드를 사용한다. 하지만 네티는 멀티 쓰레드의 단점을 극복 할 수 있는 모델링을(하지만 멀티 쓰레드의 optimize를 사용 하기 위해선 쓰레드 숫자를 적절하게 설정해 줘야한다) 구현함
 
 
-    일반적인 이벤트 루프 : 객체(이벤트 발생) -> 이벤트 큐 -> 이벤트 루프(다수의 쓰레드가 이벤트 큐에서 꺼내서 일을 함.)
-
-    네티의 멀티 쓰레드 이벤트 루프 : 채널(이벤트 발생) -> 이벤트 큐 -> 이벤트 루프(다수의 쓰레드가 이벤트 큐에서 꺼내서 일을 함.)
-     ex) Channel1, Channel2, Channel 3 -> 이벤트 큐A -> 이벤트 루프
+        * 일반적인 이벤트 루프 : 객체(이벤트 발생) -> 이벤트 큐 -> 이벤트 루프(다수의 쓰레드가 이벤트 큐에서 꺼내서 일을 함.)
+        * 네티의 멀티 쓰레드 이벤트 루프 : 채널(이벤트 발생) -> 이벤트 큐 -> 이벤트 루프(다수의 쓰레드가 이벤트 큐에서 꺼내서 일을 함.)
+         ex) Channel1, Channel2, Channel 3 -> 이벤트 큐A -> 이벤트 루프
          Channel4 -> 이벤트 큐B -> 이벤트 루프
-     즉, 채널을 이용하여 이벤트 큐와 이벤트 루프가 독립적으로 실행된다.
+        즉, 채널을 이용하여 이벤트 큐와 이벤트 루프가 독립적으로 실행된다.
+
+
+ # Java Byte Buffer
+ - 바이트 데이터를 저장하고 읽는 저장소이다.
+ - 배열을 맴버 변수로 가지고 있으며 배열에 대한 읽고 쓰기를 추상화한 메서드를 제공한다.
+ - 개발자가 배열의 인덱스에 대한 계산 없이 데이터의 변경 처리를 수행 할 수 있다.
+ - ByteBuffer, CharBuffer, IntBuffer, ShortBuffer, LongBuffer, FloatBuffer, DobuleBuffer를 제공
+
+        * 내부의 배열 상태를 관리하는 메서드
+         capacity : 버퍼에 저장 할 수 있는 데이터의 최대 크기로 한번 저장하면 변경이 불가
+         position : 읽기 또는 쓰기가 작업 중인 위치를 나타낸다. get, put 메서드가 호출되면 자동증가한다.
+         limit : 읽고 쓸 수 있는 버퍼 공간의 최대치를 나타낸다.
+
+        * 버퍼 객체 생성 메서드
+         allocate : 힙 영역에 바이트 버퍼를 생성
+         allocateDirect : OS 커널에 바이트 버퍼를 생성한다. ByteBuffer로만 생성가능
+         wrap : 입력된 바이트 배열을 사용하여 바이트 버퍼를 생성
+
+ # Netty Byte Buffer
+ - Java Byte Buffer보다 성능적으로 우수하다
+ - 네티 바이트 버퍼 풀은 빈번한 바이트 버퍼 할당과 해제에 대한 부담을 줄여줄어 GC에 부담을 덜어준다.
+ - 특징
+
+        * 별도의 읽기 인덱스와 쓰기 인덱스
+        * flip 메서드 없이 읽기 쓰기 기능 ( Java Byte Buffer는 write를 전/후 에 항상 flip을 호출해야한다. 바이트 버퍼에서 사용하는 인덱스가 하나이기 때문, 하지만 네티는 read와 write 인덱스가 분리 되어있다)
+        * 가변 바이트 버퍼 (capacity의 값을 변경하여도 기존의 값은 유지가 된다.)
+        * 바이트 버퍼 풀
+        * 복합 버퍼
+            order() => 버퍼 생성이 아닌 바이트 버퍼의 내용을 공유하는 파생 바이트 버퍼 객체를 생성한다.
+            getUnsignedByte : 기본형 byte, 반환형 short
+            getUnsignedShort : 기본형 short, 반환형 int
+            getUnsignedMedium : 기본형 medium, 반환형 int
+            getUnsignedInt : 기본형 Int, 반환형 long
+        * 자바의 바이트 버퍼와 네티의 바이트 버퍼 상호 호환
+
+
+
+ - 종류
+
+        * Heap Buffer
+            - PooledHeapByteBuf, UnpooledHeapBuf
+            - 버퍼 생성시 : ByteBufAllocator.DEFAULT.heapBuffer() , Unpooled.buffer()
+        * direct Bufer
+            - PooledDirectByteBuf, UnpooledDirectByteBuf
+            - 버퍼 생성시 : ByteBufAllocator.DEFAULT.directBuffer(), Unpooled.directBuffer()
+
